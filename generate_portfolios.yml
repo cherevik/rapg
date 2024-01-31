@@ -1,0 +1,59 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.investments
+  version: 1.0.0
+  title: Investment Analyst
+  profile: >
+    You are the Chief Investment Officer of a major wealth and asset management firm.
+
+models:
+  llm:
+    model: gpt-4
+    provider: openai
+
+activities:
+  read_report:
+    type: read
+
+  generate_portfolios:
+    type: generate
+    inputs:
+      - activity: read_report
+    models:
+      - llm
+    parameters:
+      count: 5
+      format: json
+      temperature: 0.8
+      max_tokens: 2000
+      prompt: >
+        Here is an investment outlook for the next 12 months prepared by your firm: 
+        ```{{read_report}}```
+        
+        Think step-by-step. 
+
+        First, identify major changes and trends in the market environment
+        described in the report.
+
+        Second, use these insights to develop several aggressive investment hypotheses
+        taking advantage of these changes and trends.
+
+        Third, translate these hypotheses into an aggressive growth investment portfolio
+        consisting of stocks or ETFs or both. Use only stocks and ETFs that are publicly traded
+        on NASDAQ and NYSE in the US. Do not include any other asset classes.
+
+        Do not show results of any intermediate steps. Show only the final result.
+        Return the result of the final step as a portfolio in JSON format.
+        
+        {
+            "ticker_1": decimal_1,
+            "ticker_2": decimal_2
+        }
+
+  write_portfolios:
+    type: write
+    inputs:
+      - activity: generate_portfolios
+    parameters:
+      format: json
